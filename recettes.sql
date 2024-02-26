@@ -84,4 +84,84 @@ GROUP BY
 categorie.id_Categorie
 
 
--- 
+-- 13- Afficher les recettes qui contiennent l’ingrédient « Poulet »
+SELECT
+    recette.Id_Recette,
+    recette.nom AS nom_recette,
+    ingredient.nom AS nom_ingredient
+FROM
+    recette
+JOIN
+    contenir ON recette.Id_Recette = contenir.Id_Recette
+JOIN
+    ingredient ON contenir.Id_ingredient = ingredient.Id_ingredient
+WHERE
+    ingredient.nom LIKE '%Poulet%';
+
+
+-- 14- Mettez à jour toutes les recettes en diminuant leur temps de préparation de 5 minutes 
+UPDATE recette
+SET tempsPreparation = tempsPreparation - 5;
+
+
+-- 15- Afficher les recettes qui ne nécessitent pas d’ingrédients coûtant plus de 2€ par unité de mesure
+SELECT
+recette.Id_Recette,
+recette.nom AS nom_recette,
+ingredient.nom AS nom_ingredient
+FROM
+recette
+JOIN
+contenir ON recette.Id_Recette = contenir.Id_Recette
+JOIN
+ingredient ON contenir.Id_ingredient = ingredient.Id_ingredient
+WHERE
+ingredient.prix < 2 ;
+
+
+-- 16- Afficher la / les recette(s) les plus rapides à préparer
+SELECT
+Id_Recette,
+nom AS nom_recette,
+tempsPreparation
+FROM
+recette
+WHERE
+tempsPreparation = (SELECT MIN(tempsPreparation) FROM recette);
+
+
+-- 17- Trouver les recettes qui ne nécessitent aucun ingrédient (par exemple la recette de la tasse d’eau cha
+SELECT
+recette.Id_Recette,
+recette.nom AS nom_recette,
+ingredient.nom AS nom_ingredient
+FROM
+recette
+LEFT JOIN
+contenir ON recette.Id_Recette = contenir.Id_Recette
+LEFT JOIN
+ingredient ON contenir.Id_ingredient = ingredient.Id_ingredient
+WHERE
+ingredient.Id_ingredient IS NULL ;
+
+
+-- 18- Trouver les ingrédients qui sont utilisés dans au moins 3 recettes
+SELECT
+    ingredient.Id_ingredient,
+    ingredient.nom AS nom_ingredient,
+    COUNT(contenir.Id_Recette) AS nombre_recettes
+FROM
+    ingredient 
+JOIN
+    contenir  ON ingredient.Id_ingredient = contenir.Id_ingredient
+GROUP BY
+    ingredient.Id_ingredient, ingredient.nom
+HAVING
+    COUNT(contenir.Id_Recette) >= 3;
+
+
+-- 19- Ajouter un nouvel ingrédient à une recette spécifique
+INSERT INTO  recette
+VALUES  (12,'tartiflette',20,'cuillère à café',1)
+
+-- 20- Bonus : Trouver la recette la plus coûteuse de la base de données (il peut y avoir des ex aequo, il est donc exclu d’utiliser la clause LIMIT)
